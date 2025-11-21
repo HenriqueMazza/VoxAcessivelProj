@@ -104,7 +104,7 @@ st.markdown(CSS_ESTILO, unsafe_allow_html=True)
 
 # --- FUNÇÃO PRINCIPAL ---
 def main():
-    st.title("🎙️ VoxAcessível: Gerador de Audiolivros e Áudio")
+    st.title(" VoxAcessível: Gerador de Audiolivros e Áudio")
     st.markdown("---")
 
     col_input, col_options = st.columns([3, 1])
@@ -122,7 +122,7 @@ def main():
 
     # --- COLUNA DE INPUT ---
     with col_input:
-        st.markdown("### 1. Adicione o Conteúdo (Máx. 4500 caracteres por sessão)")
+        st.markdown("### Adicione o Conteúdo (Máx. 4500 caracteres por sessão)")
         
         # --- INPUT DE TEXTO MANUAL ---
         final_text = st.text_area(
@@ -133,7 +133,7 @@ def main():
             key="text_area_input"
         )
         
-        st.markdown("### 2. Gerar Áudio")
+        st.markdown("### Gerar Áudio")
         
         # Botão para gerar o áudio
         if st.button("🎙️ Gerar Áudio", key="generate_button"):
