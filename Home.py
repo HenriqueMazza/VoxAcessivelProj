@@ -137,11 +137,12 @@ st.set_page_config(
 
 # --- 1. CABEÇALHO E TÍTULO ---
 st.title(" VoxAcessível: Democratizando o Acesso à Informação")
-st.markdown("### Um Projeto Universitário de Impacto Social para uma Sociedade Mais Justa")
+st.markdown("### Um Projeto de Impacto Social para uma Sociedade Mais Justa")
 st.markdown("---")
 
 # --- 2. BANNER PRINCIPAL ---
-st.image("images/banner.png", caption="Tecnologia a serviço da inclusão", use_container_width=True)
+# ADIÇÃO: Menciona TDAH/Déficit de Atenção no caption
+st.image("images/banner.png", caption="Tecnologia a serviço da inclusão: Vencendo barreiras de leitura, dislexia e atenção.", use_container_width=True)
 st.markdown("---")
 
 # --- 3. FOCO DO PROJETO: CARROSSEL ESTÁTICO (LADO A LADO) ---
@@ -150,7 +151,7 @@ st.subheader("Nosso Foco: Acessibilidade e Inclusão")
 focos = [
     {"img": "images/foco1.jpg", "caption": "Acesso Universal", "text": "Quebrar as barreiras textuais, permitindo que o conteúdo digital seja acessado por todos."},
     {"img": "images/foco2.jpg", "caption": "Educação Sem Limites", "text": "Potencializar o aprendizado para estudantes com dislexia, deficiência visual ou analfabetismo funcional."},
-    {"img": "images/foco3.jpg", "caption": "Tecnologia Cidadã", "text": "Utilizar Python e Streamlit para garantir que a tecnologia seja uma força para a igualdade e inclusão."}
+    {"img": "images/foco3.jpg", "caption": "Tecnologia Como apoio", "text": "Utilizar tecnologia como uma força para a igualdade e inclusão."}
 ]
 
 # Cria 3 colunas para exibir os focos
@@ -181,21 +182,46 @@ col_problema1, col_problema2 = st.columns([1, 2])
 
 with col_problema1:
     st.image("images/problema.jpg",
-             caption="O acesso à informação ainda é um desafio para muitos.", use_container_width=True)
+              caption="O acesso à informação ainda é um desafio para muitos.", use_container_width=True)
 
 with col_problema2:
     st.markdown("""
-A vasta maioria do conteúdo digital na internet é apresentada em formato de texto. Isso cria uma **barreira intransponível** para diversos grupos:
+A vasta maioria do conteúdo digital na internet é apresentada em formato de texto. Isso cria uma **barreira** para diversos grupos:
 * **Pessoas com Deficiência Visual:** Embora existam leitores de tela, a experiência muitas vezes é complexa, cara ou não intuitiva.
 * **Indivíduos com Dislexia:** O texto pode ser uma fonte de frustração e lentidão no aprendizado.
 * **Analfabetismo Funcional:** Pessoas que, mesmo sabendo ler, têm dificuldade em compreender textos complexos.
 
-O VoxAcessível oferece uma solução de baixo custo, imediata e user-friendly, utilizando a avançada tecnologia de **Text-to-Speech do Google (gTTS)** para garantir que a informação alcance a todos, fortalecendo a **democratização do conhecimento**.
+O VoxAcessível oferece uma solução de baixo custo, imediata e amigável, utilizando a avançada tecnologia de **Text-to-Speech do Google (gTTS)** para garantir que a informação alcance a todos, fortalecendo a **democratização do conhecimento**.
 """)
 
 st.markdown("---")
 
-# --- 5. CONTEXTO SOCIAL E DADOS ---
+# --- 5. NOVA SEÇÃO: FOCO NO DÉFICIT DE ATENÇÃO (TDAH) ---
+st.subheader("Concentração e Foco: O Desafio do TDAH")
+
+col_tdah1, col_tdah2 = st.columns([2, 1])
+
+with col_tdah1:
+    st.info("""
+    O Transtorno de Déficit de Atenção e Hiperatividade (TDAH) afeta a capacidade de manter o foco em tarefas longas e monótonas, como a **leitura de instruções, manuais ou documentos extensos**.
+    
+    A conversão de texto para áudio se torna uma **ferramenta de apoio crucial** para este público, pois:
+    
+    * **Reduz a Carga Cognitiva:** O áudio exige menos esforço visual e mental contínuo.
+    * **Instruções Dinâmicas:** Permite que o usuário **ouça** as instruções complexas de um PDF, em vez de ter que **ler e reler**, facilitando o processamento da informação e a execução de tarefas.
+    * **Aprendizado Multimodal:** Combinar leitura (para quem acompanha) e audição estimula diferentes áreas do cérebro, melhorando a retenção da informação.
+    
+    O VoxAcessível é um aliado para quem tem dificuldade de atenção, transformando barreiras textuais em oportunidades de aprendizado auditivo.
+    """)
+
+with col_tdah2:
+    # IMAGEM RELEVANTE PARA FOCO/ATENÇÃO (Substitua pela imagem real)
+    st.image("images/foco_atencao.png", caption="O áudio como um canal de atenção mais eficaz.", use_container_width=True)
+    
+st.markdown("---")
+
+
+# --- 6. CONTEXTO SOCIAL E DADOS (Atualizado com Menção) ---
 st.subheader("Impacto Social: Quem Será Beneficiado?")
 
 col_dados1, col_dados2 = st.columns([3, 2]) 
@@ -207,6 +233,7 @@ with col_dados1:
     Dados Chave:
     * **Deficiência Visual:** Cerca de **7 milhões** de brasileiros.
     * **Dislexia e Dificuldades de Leitura:** Estima-se que até **10-15%** da população enfrente algum grau de dislexia.
+    * **Déficit de Atenção (TDAH):** O áudio assistivo é vital para a **inclusão educacional** deste público.
     * **Analfabetismo Funcional:** Um desafio que atinge aproximadamente **29%** da população adulta.
 
     Ao oferecer uma solução gratuita e acessível, o VoxAcessível ataca um problema de **inclusão social**, transformando a forma como milhões de brasileiros interagem com o mundo digital.
@@ -218,7 +245,7 @@ with col_dados2:
 st.markdown("---")
 
 
-# --- 6. SEÇÃO OBJETIVO PRINCIPAL (AGORA SIMPLES E CENTRALIZADO) ---
+# --- 7. SEÇÃO OBJETIVO PRINCIPAL (AGORA SIMPLES E CENTRALIZADO) ---
 st.subheader("O Nosso Objetivo É Claro")
 
 # Usa colunas para centralizar o texto do objetivo
@@ -234,8 +261,8 @@ with col_obj_principal:
 
 st.markdown("---")
 
-# --- 7. CHAMADA PARA AÇÃO COM BOTÃO FUNCIONAL (Botão Único) ---
-st.subheader("Experimente o VoxAcessível Agora!")
+# --- 8. CHAMADA PARA AÇÃO COM BOTÃO FUNCIONAL (Botão Único) ---
+st.subheader("Experimente o VoxAcessível Agora! 🎧")
 st.markdown("""
 <div class="center-text-block">
     <p>Clique no botão abaixo para ir diretamente para a nossa ferramenta e veja como é fácil 
@@ -247,8 +274,8 @@ st.markdown("""
 col_btn_antes, col_btn_centro, col_btn_depois = st.columns([1, 1, 1])
 
 with col_btn_centro:
-    # O LINK FINAL E CORRETO (Botão Único, Mais Quadrado e Centralizado)
+    # O LINK FINAL E CORRETO
     st.markdown("""
-    <a href="/Ferramenta" class="link-button-style">  Acessar a Ferramenta VoxAcessível
+    <a href="/Ferramenta" class="link-button-style">  Acessar a Ferramenta VoxAcessível
     </a>
     """, unsafe_allow_html=True)
