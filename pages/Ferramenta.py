@@ -1,11 +1,12 @@
 import streamlit as st
 from gtts import gTTS
-from io import BytesIO
+from io import BytesIO, StringIO
 import time 
 import PyPDF2 
 import re 
 import uuid 
-# Removidos imports não utilizados
+import pandas as pd
+import json
 
 # --- CONFIGURAÇÕES DO SISTEMA ---
 MAX_CHARS_PER_CHUNK = 3500
@@ -20,6 +21,10 @@ TAB_TASKS = "📝 Assistente de Tarefas e Foco"
 # --- INICIALIZAÇÃO DO ESTADO DA SESSÃO ---
 if 'text_area_input' not in st.session_state:
     st.session_state["text_area_input"] = ""
+
+# Estado para o Bloco de Anotações
+if 'notes_area_input' not in st.session_state:
+    st.session_state["notes_area_input"] = ""
 
 # 🔑 ESTADO: Armazena qual aba está ativa (padrao: audio)
 if 'active_tab_key' not in st.session_state:
@@ -54,6 +59,9 @@ def extract_text_from_pdf(pdf_file):
         for page in reader.pages:
             content = page.extract_text()
             if content:
+                # Remove múltiplos espaços em branco, quebras de linha e hífens
+                content = re.sub(r'(\w+)-\s*\n\s*(\w+)', r'\1\2', content)
+                content = content.replace('\n', ' ')
                 text.append(content)
         return "\n".join(text)
     except Exception as e:
@@ -109,6 +117,12 @@ def inject_dynamic_css(font_size, line_height, font_family):
             font-size: {font_size}px !important;
             line-height: {line_height} !important;
         }}
+        
+        /* Oculta o "Press Ctrl+Enter to apply" no Bloco de Anotações */
+        .stTextArea[data-testid*="notes_area_input"] + div > div > sub {{
+            display: none !important;
+        }}
+
         .stButton>button {{
             background-color: #ff4b4b; 
             color: white;
@@ -219,8 +233,7 @@ def start_pomodoro_timer(focus_minutes, break_minutes, lang_code, audio_placehol
 # --- FUNÇÕES DO ASSISTENTE DE TAREFAS ---
 def add_task_callback():
     """
-    Adiciona a tarefa. st.rerun() removido.
-    Usa a chave 'new_task_description_input' para o widget.
+    Adiciona a tarefa.
     """
     description = st.session_state.get('new_task_description_input') 
     priority = st.session_state.get('new_task_priority_select')
@@ -239,7 +252,7 @@ def add_task_callback():
         st.success("Tarefa adicionada!")
         
         # Limpa o input no próximo rerun automático do Streamlit
-        st.session_state['new_task_description_input'] = ""
+        #st.session_state['new_task_description_input'] = "" # Removido para evitar o erro de callback do st.session_state
         
         # Garante que a ABA TAREFAS permaneça ativa após o rerun automático
         st.session_state['active_tab_key'] = TAB_TASKS
@@ -250,7 +263,7 @@ def add_task_callback():
 
 def complete_task(task_id):
     """
-    Conclui a tarefa. st.rerun() removido.
+    Conclui a tarefa.
     """
     for task in st.session_state['tasks']:
         if task['id'] == task_id:
@@ -260,10 +273,86 @@ def complete_task(task_id):
 
 def delete_task(task_id):
     """
-    Exclui a tarefa. st.rerun() removido.
+    Exclui a tarefa.
     """
     st.session_state['tasks'] = [task for task in st.session_state['tasks'] if task['id'] != task_id]
     st.warning("Tarefa excluída.")
+
+# --- NOVAS FUNÇÕES DE EXPORTAÇÃO E IMPORTAÇÃO ---
+
+# 1. FUNÇÕES PARA ANOTAÇÕES
+def export_notes():
+    """Retorna o conteúdo das anotações em formato TXT."""
+    return st.session_state.get('notes_area_input', "Bloco de Anotações Vazio.").encode('utf-8')
+
+# 2. FUNÇÕES PARA TAREFAS
+def export_tasks_to_csv():
+    """Converte a lista de tarefas em um DataFrame e depois em CSV."""
+    if not st.session_state['tasks']:
+        return "Descrição,Prioridade,Tempo Estimado (min),Concluído,Timestamp\n"
+        
+    # Prepara os dados, removendo o campo 'id' para a exportação
+    data_for_df = []
+    for task in st.session_state['tasks']:
+        data_for_df.append({
+            "Descrição": task['description'],
+            "Prioridade": task['priority'],
+            "Tempo Estimado (min)": task['estimated_time'],
+            "Concluído": "Sim" if task['completed'] else "Não",
+            "Timestamp": task['timestamp']
+        })
+        
+    df = pd.DataFrame(data_for_df)
+    return df.to_csv(index=False).encode('utf-8')
+
+def import_tasks_from_csv(uploaded_file):
+    """Lê um arquivo CSV e tenta carregar as tarefas no estado da sessão."""
+    try:
+        # Lê o arquivo CSV
+        stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+        df = pd.read_csv(stringio)
+        
+        # Mapeamento de colunas (sensível a maiúsculas/minúsculas e nomes)
+        required_columns = ["Descrição", "Prioridade", "Tempo Estimado (min)", "Concluído"]
+        if not all(col in df.columns for col in required_columns):
+            st.error("Erro: O arquivo CSV deve conter as colunas: 'Descrição', 'Prioridade', 'Tempo Estimado (min)', 'Concluído'.")
+            return
+
+        new_tasks = []
+        for index, row in df.iterrows():
+            # Tenta converter o campo 'Concluído' para booleano
+            is_completed = str(row['Concluído']).strip().lower() in ['sim', 'true', '1']
+            
+            # Tenta converter tempo estimado para int, com fallback
+            try:
+                est_time = int(row['Tempo Estimado (min)'])
+            except:
+                est_time = 30 # Valor padrão em caso de erro
+
+            # Validação básica de prioridade
+            priority = str(row['Prioridade']).strip()
+            if priority not in ["Alta", "Média", "Baixa"]:
+                 priority = "Média" # Valor padrão em caso de erro
+            
+            task = {
+                "id": str(uuid.uuid4()),
+                "description": str(row['Descrição']).strip(),
+                "priority": priority,
+                "estimated_time": est_time,
+                "completed": is_completed,
+                "timestamp": time.time()
+            }
+            new_tasks.append(task)
+
+        # Sobrescreve as tarefas existentes com as novas
+        st.session_state['tasks'] = new_tasks
+        st.success(f"Sucesso! {len(new_tasks)} tarefas importadas do arquivo CSV. 📝")
+        
+        # O rerun é necessário para que a lista de tarefas atualizada seja exibida
+        st.rerun() 
+
+    except Exception as e:
+        st.error(f"Erro ao processar o arquivo CSV: {e}")
 
 
 # --- FUNÇÃO PRINCIPAL ---
@@ -271,7 +360,7 @@ def main():
     
     st.set_page_config(layout="wide") 
     
-    st.title(" ✨ Ferramentas de Acessibilidade e Produtividade")
+    st.title("Ferramentas de Acessibilidade e Produtividade")
     st.markdown("---")
 
     # Garante que os valores iniciais de font/line height existam
@@ -311,12 +400,12 @@ def main():
                                     key="lang_select_audio")
             lang_code = "pt" if language == "Português (BR)" else "en"
             
-            is_slow = st.checkbox("Leitura Lenta (Melhor para Dislexia)", value=False, key="is_slow_audio")
+            is_slow = st.checkbox("Leitura Lenta", value=False, key="is_slow_audio")
             st.markdown("---")
 
             # MODO ACESSIBILIDADE VISUAL
             st.markdown("### Acessibilidade Visual (Global)")
-            st.caption("Ajuste para Dislexia e Baixa Visão. Afeta ambas as abas.")
+            st.caption("Ajuste para melhor leitura e conforto visual. Afeta ambas as abas.")
             st.session_state['font_size'] = st.slider("Tamanho da Fonte (px):", 14, 30, st.session_state['font_size'], key="global_font_size")
             st.session_state['line_height'] = st.slider("Espaçamento de Linha:", 1.0, 3.0, st.session_state['line_height'], 0.1, key="global_line_height")
             
@@ -326,7 +415,7 @@ def main():
             
             # --- CRONÔMETRO DE FOCO (POMODORO) ---
             st.markdown("### ⏱️ Cronômetro de Foco")
-            st.caption("Apoio para concentração (TDAH).")
+            st.caption("Apoio para concentração (Método Pomodoro).")
 
             focus_min = st.number_input("Duração do Foco (min):", min_value=1, value=25, key='focus_input', disabled=st.session_state['timer_running'])
             break_min = st.number_input("Duração da Pausa (min):", min_value=1, value=5, key='break_input', disabled=st.session_state['timer_running'])
@@ -391,7 +480,7 @@ def main():
         # --- COLUNA DE INPUT ---
         with col_input:
             
-            st.markdown("### Adicione o Conteúdo para Audiolivro")
+            st.markdown("### 1. Adicione o Conteúdo para Audiolivro")
             
             uploaded_file = st.file_uploader("Carregar arquivo PDF (Opcional)", type=["pdf"], key="pdf_uploader_audio_tab")
             
@@ -407,7 +496,7 @@ def main():
             final_text = st.text_area(
                 "Texto para Áudio:",
                 height=300,
-                placeholder="Digite seu texto ou carregue um PDF...",
+                placeholder="Digite seu texto ou carregue um PDF para convertê-lo em áudio...",
                 key="text_area_input" 
             )
 
@@ -446,15 +535,40 @@ def main():
                 else:
                     st.warning("Por favor, insira algum texto ou carregue um PDF.")
 
-            # --- MENSAGEM MOTIVACIONAL ADICIONADA AQUI ---
+            # --- MENSAGEM MOTIVACIONAL ---
             st.markdown("---")
             st.markdown(
                 """
-                 **Lembrete:** Cada palavra lida ou ouvida é um passo à frente. 
-                Sua dedicação é a chave para o sucesso! Continue firme. 🚀
+                **Lembrete:** Cada palavra lida ou ouvida é um passo à frente. 
+                Sua dedicação é a chave para o sucesso! Continue firme.
                 """
             )
+            
+            # --- NOVO BLOCO DE ANOTAÇÕES ---
             st.markdown("---")
+            st.markdown("### Bloco de Anotações")
+            st.caption("Use este espaço para anotar ideias, pontos-chave ou resumos enquanto o áudio é reproduzido.")
+            
+            st.text_area(
+                "Suas Anotações:",
+                # Removido o 'value=' aqui para evitar conflito com o update do key
+                height=200,
+                key="notes_area_input" 
+            )
+            
+            # --- EXPORTAÇÃO DE ANOTAÇÕES ---
+            if st.session_state['notes_area_input'].strip():
+                st.download_button(
+                    label="⬇️ Baixar Anotações (TXT)",
+                    data=export_notes(),
+                    file_name="anotacoes_voxacelera.txt",
+                    mime="text/plain",
+                    key="download_notes_button"
+                )
+            # A mensagem de HTML foi removida e a mensagem sub está oculta via CSS
+            # O st.text_area ainda exibirá "Press Ctrl+Enter to apply" no canto, que
+            # é um comportamento padrão do Streamlit que não pode ser removido sem st.form
+            # ou CSS complexo, o CSS acima tenta mascarar essa mensagem.
             # ------------------------------------------------
 
 
@@ -463,14 +577,40 @@ def main():
         
         st.header("Assistente de Tarefas e Foco")
         st.markdown("Gerencie suas tarefas com prioridade e estimativa de tempo para melhorar o foco e a organização.")
-
+        
+        # --- COLUNA DE AÇÕES DE IMPORTAÇÃO/EXPORTAÇÃO DE TAREFAS ---
+        st.markdown("### Importar/Exportar Tarefas (CSV)")
+        col_import, col_export = st.columns(2)
+        
+        with col_import:
+            # Novo botão de Importar tarefas
+            uploaded_tasks = st.file_uploader("⬆️ Importar Lista de Tarefas (CSV)", type=["csv"], key="import_tasks_uploader")
+            # Chama a função de importação se um arquivo foi carregado
+            if uploaded_tasks:
+                import_tasks_from_csv(uploaded_tasks)
+                
+        with col_export:
+            if st.session_state['tasks']:
+                 st.download_button(
+                    label="⬇️ Baixar Lista de Tarefas (CSV)",
+                    data=export_tasks_to_csv(),
+                    file_name="tarefas_voxacelera.csv",
+                    mime="text/csv",
+                    key="download_tasks_button"
+                )
+            else:
+                st.markdown("Adicione tarefas para baixa-las")
+        
+        st.markdown("---")
+        
         st.markdown("### Adicionar Nova Tarefa")
         
         col1, col2, col3, col4 = st.columns([4, 2, 2, 2])
         
         with col1:
             # CHAVE: 'new_task_description_input'
-            st.text_input("Descrição da Tarefa:", key='new_task_description_input', placeholder="Iniciar pesquisa de projeto")
+            # Manter o 'value' em '' no input limpa o campo após o sucesso do callback
+            st.text_input("Descrição da Tarefa:", value=st.session_state.get('new_task_description_input', ''), key='new_task_description_input', placeholder="Iniciar pesquisa de projeto")
             
         with col2:
             st.selectbox("Prioridade:", ["Baixa", "Média", "Alta"], key='new_task_priority_select')
@@ -490,9 +630,10 @@ def main():
             
             # Ordenação das tarefas: prioridade > não concluída > tempo
             priority_order = {"Alta": 3, "Média": 2, "Baixa": 1}
+            # Adicionamos timestamp na chave de ordenação para desempate
             sorted_tasks = sorted(
                 st.session_state['tasks'],
-                key=lambda x: (x['completed'], -priority_order.get(x['priority'], 0), x['timestamp'])
+                key=lambda x: (x['completed'], -priority_order.get(x['priority'], 0), x['timestamp']) 
             )
             
             for task in sorted_tasks:
@@ -513,8 +654,13 @@ def main():
                 
                 # Ações de tarefa
                 with st.container():
+                    # Usamos uma coluna larga à esquerda para o HTML, e duas estreitas para os botões
                     col_b1, col_b2, col_b3 = st.columns([8, 1, 1]) 
                     
+                    # Coloca os botões de ação na mesma linha do item (visual)
+                    with col_b1:
+                        st.empty() # Espaçador para empurrar os botões para a direita
+                        
                     if not task['completed']:
                         with col_b2:
                             st.button("✔️ Concluir", key=f"complete_{task['id']}", on_click=complete_task, args=(task['id'],))
@@ -526,7 +672,7 @@ def main():
                         
                 
         else:
-            st.info("Nenhuma tarefa adicionada ainda. Comece a planejar!")
+            st.info("Nenhuma tarefa adicionada ainda. Comece a planejar ou importe uma lista de tarefas (CSV)!")
 
 if __name__ == '__main__':
     main()

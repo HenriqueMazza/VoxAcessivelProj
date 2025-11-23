@@ -129,29 +129,29 @@ st.markdown(CSS_ESTILO, unsafe_allow_html=True)
 
 
 st.set_page_config(
-    page_title="Início | VoxAcessível",
+    page_title="Início | VoxAcelera", # NOVO TÍTULO
     page_icon="🏠",
     layout="wide",
     initial_sidebar_state="collapsed" 
 )
 
 # --- 1. CABEÇALHO E TÍTULO ---
-st.title(" VoxAcessível: Democratizando o Acesso à Informação")
-st.markdown("### Um Projeto de Impacto Social para uma Sociedade Mais Justa")
+st.title("VoxAcelera: Otimizando Leitura e Produtividade em Áudio") # NOVO TÍTULO
+st.markdown("### Aumente sua eficiência na gestão de documentos e tempo") # NOVO SLOGAN
 st.markdown("---")
 
 # --- 2. BANNER PRINCIPAL ---
-# ADIÇÃO: Menciona TDAH/Déficit de Atenção no caption
-st.image("images/banner.png", caption="Tecnologia a serviço da inclusão: Vencendo barreiras de leitura, dislexia e atenção.", use_container_width=True)
+# NOVO CAPTION: Foco em Multitarefa e Produtividade
+st.image("images/banner.png", caption="Ferramentas de gestão de tempo e conteúdo para máxima performance profissional.", use_container_width=True) 
 st.markdown("---")
 
 # --- 3. FOCO DO PROJETO: CARROSSEL ESTÁTICO (LADO A LADO) ---
-st.subheader("Nosso Foco: Acessibilidade e Inclusão")
+st.subheader("Nosso Foco: Eficiência e Gestão de Tempo") # NOVO SUBTÍTULO
 
 focos = [
-    {"img": "images/foco1.jpg", "caption": "Acesso Universal", "text": "Quebrar as barreiras textuais, permitindo que o conteúdo digital seja acessado por todos."},
-    {"img": "images/foco2.jpg", "caption": "Educação Sem Limites", "text": "Potencializar o aprendizado para estudantes com dislexia, deficiência visual ou analfabetismo funcional."},
-    {"img": "images/foco3.jpg", "caption": "Tecnologia Como apoio", "text": "Utilizar tecnologia como uma força para a igualdade e inclusão."}
+    {"img": "images/foco1.jpg", "caption": "Multitarefa Inteligente", "text": "Consuma relatórios e artigos complexos por áudio enquanto executa outras tarefas críticas."},
+    {"img": "images/foco2.jpg", "caption": "Otimização de Leitura", "text": "Converta PDFs e documentos longos em minutos, acelerando o aprendizado e a revisão de informações."},
+    {"img": "images/foco3.jpg", "caption": "Foco Estruturado", "text": "Utilize o cronômetro Pomodoro e o assistente de tarefas para eliminar a procrastinação e manter a alta concentração."}
 ]
 
 # Cria 3 colunas para exibir os focos
@@ -176,77 +176,75 @@ st.markdown("---")
 
 
 # --- 4. SEÇÃO DE PROBLEMATIZAÇÃO ---
-st.subheader("O Problema que Queremos Resolver: A Barreira do Texto")
+st.subheader("O Problema que Queremos Resolver: A Sobrecarga de Informação") # NOVO SUBTÍTULO
 
 col_problema1, col_problema2 = st.columns([1, 2])
 
 with col_problema1:
     st.image("images/problema.jpg",
-              caption="O acesso à informação ainda é um desafio para muitos.", use_container_width=True)
+              caption="O tempo gasto em leitura densa é um dreno na produtividade.", use_container_width=True) # NOVO CAPTION
 
 with col_problema2:
     st.markdown("""
-A vasta maioria do conteúdo digital na internet é apresentada em formato de texto. Isso cria uma **barreira** para diversos grupos:
-* **Pessoas com Deficiência Visual:** Embora existam leitores de tela, a experiência muitas vezes é complexa, cara ou não intuitiva.
-* **Indivíduos com Dislexia:** O texto pode ser uma fonte de frustração e lentidão no aprendizado.
-* **Analfabetismo Funcional:** Pessoas que, mesmo sabendo ler, têm dificuldade em compreender textos complexos.
+A vasta maioria dos dados e instruções cruciais para o seu trabalho está contida em **documentos de texto (PDFs, relatórios, manuais)**. Isso cria uma **barreira de eficiência**:
+* **Perda de Tempo:** Profissionais e estudantes gastam horas lendo, revisando e relendo informações que poderiam ser consumidas auditivamente.
+* **Fadiga Cognitiva:** A leitura prolongada de textos densos leva à exaustão e reduz a capacidade de tomada de decisão.
+* **Multitarefa Ineficiente:** Você precisa processar informações e, ao mesmo tempo, executar tarefas práticas, o que é impossível apenas lendo.
 
-O VoxAcessível oferece uma solução de baixo custo, imediata e amigável, utilizando a avançada tecnologia de **Text-to-Speech do Google (gTTS)** para garantir que a informação alcance a todos, fortalecendo a **democratização do conhecimento**.
-""")
+O VoxAcelera oferece uma solução imediata, transformando qualquer texto, especialmente PDFs, em **áudio de alta qualidade** (via gTTS), permitindo que você consuma o conteúdo onde e quando quiser, **maximizando o Retorno sobre o Tempo (ROT)**.
+""") # NOVO TEXTO
 
 st.markdown("---")
 
 # --- 5. NOVA SEÇÃO: FOCO NO DÉFICIT DE ATENÇÃO (TDAH) ---
-st.subheader("Concentração e Foco: O Desafio do TDAH")
+st.subheader("O Desafio da Concentração e da Procrastinação") # NOVO SUBTÍTULO (Foco na Procrastinação)
 
 col_tdah1, col_tdah2 = st.columns([2, 1])
 
 with col_tdah1:
     st.info("""
-    O Transtorno de Déficit de Atenção e Hiperatividade (TDAH) afeta a capacidade de manter o foco em tarefas longas e monótonas, como a **leitura de instruções, manuais ou documentos extensos**.
+    Manter o foco em tarefas longas e repetitivas é um desafio universal na era digital. A **procrastinação** e o **déficit de atenção** afetam a execução de projetos críticos.
     
-    A conversão de texto para áudio se torna uma **ferramenta de apoio crucial** para este público, pois:
+    Nossa abordagem de Foco Estruturado oferece benefícios duplos:
     
-    * **Reduz a Carga Cognitiva:** O áudio exige menos esforço visual e mental contínuo.
-    * **Instruções Dinâmicas:** Permite que o usuário **ouça** as instruções complexas de um PDF, em vez de ter que **ler e reler**, facilitando o processamento da informação e a execução de tarefas.
-    * **Aprendizado Multimodal:** Combinar leitura (para quem acompanha) e audição estimula diferentes áreas do cérebro, melhorando a retenção da informação.
+    * **Estrutura de Execução (Pomodoro):** Impõe blocos de **foco profundo e ininterrupto** (25 min), seguidos por pausas obrigatórias, combatendo a dispersão.
+    * **Gestão de Tarefas Ágil:** Permite que você defina a **Prioridade** e o **Tempo Estimado** para cada tarefa, garantindo que você esteja sempre trabalhando no que gera mais valor.
+    * **Consumo Dinâmico (Áudio):** Permite que você **ouça** informações complexas em vez de apenas ler, reduzindo a monotonia e ativando o **aprendizado multimodal** para uma melhor retenção.
     
-    O VoxAcessível é um aliado para quem tem dificuldade de atenção, transformando barreiras textuais em oportunidades de aprendizado auditivo.
-    """)
+    O VoxAcelera é o seu aliado para transformar a intenção de ser produtivo em **execução consistente**.
+    """) # NOVO TEXTO
 
 with col_tdah2:
     # IMAGEM RELEVANTE PARA FOCO/ATENÇÃO (Substitua pela imagem real)
-    st.image("images/foco_atencao.png", caption="O áudio como um canal de atenção mais eficaz.", use_container_width=True)
+    st.image("images/foco_atencao.png", caption="Estrutura e áudio para execução de tarefas.", use_container_width=True) 
     
 st.markdown("---")
 
 
 # --- 6. CONTEXTO SOCIAL E DADOS (Atualizado com Menção) ---
-st.subheader("Impacto Social: Quem Será Beneficiado?")
+st.subheader("Valor Agregado: Quem Ganha com a Eficiência?") # NOVO SUBTÍTULO
 
 col_dados1, col_dados2 = st.columns([3, 2]) 
 
 with col_dados1:
     st.info("""
-    O desafio de acesso à informação é uma realidade para uma parcela significativa da população. No Brasil, estimativas apontam que **mais de 45 milhões** de pessoas podem se beneficiar diretamente de tecnologias assistivas como o VoxAcessível.
+    A busca por ferramentas de produtividade e otimização de tempo é uma necessidade crescente no mercado de trabalho. O VoxAcelera agrega valor para:
     
-    Dados Chave:
-    * **Deficiência Visual:** Cerca de **7 milhões** de brasileiros.
-    * **Dislexia e Dificuldades de Leitura:** Estima-se que até **10-15%** da população enfrente algum grau de dislexia.
-    * **Déficit de Atenção (TDAH):** O áudio assistivo é vital para a **inclusão educacional** deste público.
-    * **Analfabetismo Funcional:** Um desafio que atinge aproximadamente **29%** da população adulta.
-
-    Ao oferecer uma solução gratuita e acessível, o VoxAcessível ataca um problema de **inclusão social**, transformando a forma como milhões de brasileiros interagem com o mundo digital.
-    """)
+    * **Profissionais Ocupados:** Que precisam consumir documentos rapidamente (relatórios, contratos) sem estarem presos a uma tela.
+    * **Estudantes de Alto Nível:** Que precisam absorver vastos volumes de material para exames e pesquisas.
+    * **Usuários com Desafios de Leitura:** Embora o foco seja Produtividade, a função de **Acessibilidade Visual** (espaçamento, tamanho da fonte) é um bônus vital para quem tem dislexia ou dificuldades de leitura, garantindo que a **eficiência seja acessível a todos**.
+    
+    Ao integrar conversão de áudio, gestão de tarefas e foco estruturado, o VoxAcelera não apenas economiza tempo, mas melhora a **qualidade da sua performance cognitiva**.
+    """) # NOVO TEXTO
 
 with col_dados2:
-    st.image("images/foco4.jpeg", caption="O áudio como ferramenta de inclusão.", use_container_width=True)
+    st.image("images/foco4.jpeg", caption="Aumento da velocidade de consumo de conteúdo.", use_container_width=True) # NOVO CAPTION
 
 st.markdown("---")
 
 
 # --- 7. SEÇÃO OBJETIVO PRINCIPAL (AGORA SIMPLES E CENTRALIZADO) ---
-st.subheader("O Nosso Objetivo É Claro")
+st.subheader("O Nosso Objetivo É Claro: Máxima Performance") # NOVO SUBTÍTULO
 
 # Usa colunas para centralizar o texto do objetivo
 col_obj_antes, col_obj_principal, col_obj_depois = st.columns([1, 4, 1])
@@ -255,18 +253,17 @@ with col_obj_principal:
     # Apenas o texto, centralizado com a classe CSS
     st.markdown("""
     <p class="objective-text">
-    Desenvolver uma aplicação web simples, intuitiva e acessível para converter textos digitais em áudio de alta qualidade. Com o VoxAcessível, visamos reduzir drasticamente a exclusão informacional de milhões de pessoas, promovendo a cidadania digital plena.
+    Entregar uma aplicação web poderosa e intuitiva que transforma documentos densos em áudio de alta qualidade e oferece ferramentas de gestão de tempo (Pomodoro e Tarefas). Com o VoxAcelera, visamos otimizar a rotina de trabalho e estudo, promovendo a máxima performance individual.
     </p>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True) # NOVO TEXTO
 
 st.markdown("---")
 
 # --- 8. CHAMADA PARA AÇÃO COM BOTÃO FUNCIONAL (Botão Único) ---
-st.subheader("Experimente o VoxAcessível Agora! 🎧")
+st.subheader("Acelere sua Produtividade Agora!") # NOVO SUBTÍTULO
 st.markdown("""
 <div class="center-text-block">
-    <p>Clique no botão abaixo para ir diretamente para a nossa ferramenta e veja como é fácil 
-    transformar texto em áudio.</p>
+    <p>Clique no botão abaixo para acessar as ferramentas e comece a otimizar sua leitura e seu foco hoje mesmo.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -276,6 +273,6 @@ col_btn_antes, col_btn_centro, col_btn_depois = st.columns([1, 1, 1])
 with col_btn_centro:
     # O LINK FINAL E CORRETO
     st.markdown("""
-    <a href="/Ferramenta" class="link-button-style">  Acessar a Ferramenta VoxAcessível
+    <a href="/Ferramenta" class="link-button-style">  Acessar o VoxAcelera
     </a>
     """, unsafe_allow_html=True)
